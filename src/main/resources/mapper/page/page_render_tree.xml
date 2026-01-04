@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace='page_render_tree'>
+    <!-- 查询页面渲染树 -->
+    <select id="findAllPageRenderTreeByPageID" parameterType="java.util.HashMap" resultType="java.util.HashMap" useCache="false">
+        SELECT t.id,t.name,t.pid,t.ref,t.type,t.page_id,t.config_str,t.related_value,t2.component_code
+        from page_render_tree t left join page_component_frontend t2 on t.related_value = t2.component_id
+        where t.page_id=#{page_id,jdbcType=VARCHAR}
+    </select>
+    <!-- 查询关联页面渲染树 -->
+    <select id="findRalativePageRenderTreeByPageID" parameterType="java.util.HashMap" resultType="java.util.HashMap" useCache="false">
+
+        SELECT t.id,t.name,t.pid,t.ref,t.type,t.page_id,t.config_str,t.related_value,t2.component_code
+        from page_render_tree t left join page_component_frontend t2 on t.related_value = t2.component_id
+        where t.page_id in(
+            select page_id  from page_render_tree where id in (select related_value from page_render_tree where page_id = #{page_id,jdbcType=VARCHAR} and type='pageOut')
+        )
+
+    </select>
+
+    <insert id="insert" parameterType="java.util.HashMap">
+        INSERT INTO page_render_tree(page_id,id,name,ref,type,config_str) VALUES
+        (#{page_id,jdbcType=VARCHAR},,#{id,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},
+         #{ref,jdbcType=VARCHAR},#{type,jdbcType=VARCHAR},#{config_str,jdbcType=BLOB});
+    </insert>
+
+    <!-- 更新树节点 -->
+    <select id="updatePageRenderTreeByID" parameterType="java.util.HashMap" resultType="java.util.HashMap" useCache="false">
+        UPDATE page_render_tree
+        SET name=#{name,jdbcType=VARCHAR},config_str=#{config_str,jdbcType=BLOB}
+        where id=#{id,jdbcType=VARCHAR};
+        UPDATE page_centre
+        SET page_name=#{name,jdbcType=VARCHAR}
+        where page_id=#{page_id,jdbcType=VARCHAR};
+    </select>
+
+    <!-- 保存页面渲染树 -->
+    <select id="savePageRenderTree" parameterType="java.util.HashMap" resultType="java.util.HashMap" useCache="false">
+
+        /*1.变量定义*/
+        select @nowDate:=now();
+
+        <!--保存备份到page_render_tree_back-->
+        insert into page_render_tree_back(id,pid,name,ref,type,page_id,config_str,related_value,back_time,back_ms)
+        select id,pid,name,ref,type,page_id,config_str,related_value,@nowDate as back_time,'保存备份' as back_ms from page_render_tree where page_id=#{page_id,jdbcType=INTEGER};
+        <!--根据page_id删除渲染树数据-->
+        delete from page_render_tree where page_id=#{page_id,jdbcType=VARCHAR};
+        <!--更新页面数据-->
+        update page_centre set page_name=#{page_name,jdbcType=VARCHAR} where page_id=#{page_id,jdbcType=VARCHAR};
+        <!--加入新的渲染树数据-->
+        <if test="pageRenderTreeData.size() > 0">
+            insert into page_render_tree (id,pid,name,ref,type,page_id,config_str,related_value) values
+            <foreach collection="pageRenderTreeData" item="item" separator=",">
+                (#{item.id,jdbcType=VARCHAR},#{item.pid,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},
+                #{item.ref,jdbcType=VARCHAR},#{item.type,jdbcType=VARCHAR},#{item.page_id,jdbcType=VARCHAR},
+                 #{item.config_str,jdbcType=BLOB},#{item.related_value,jdbcType=VARCHAR})
+            </foreach>;
+        </if>
+
+        <!--更新关联的所有块的名称数据-->
+        update page_render_tree set name=#{page_name,jdbcType=VARCHAR} where ref=#{topPageBlockRef,jdbcType=VARCHAR}
+
+
+    </select>
+
+
+
+
+
+
+</mapper>
