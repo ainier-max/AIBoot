@@ -1,4 +1,5 @@
 package cbc.boot.myboot.controller.map.util;
+
 import java.io.IOException;
 import java.security.SecureRandom;
 
@@ -7,8 +8,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import java.util.Base64;
 
 /**
  * DES加密 解密算法
@@ -18,14 +18,14 @@ import sun.misc.BASE64Encoder;
  */
 public class DesUtils {
 
-    private final static String DES = "DES";//方式
-    private final static String ENCODE = "UTF-8";//编码
-    private final static String defaultKey = "12345678";//8的倍数秘钥
+    private final static String DES = "DES";// 方式
+    private final static String ENCODE = "UTF-8";// 编码
+    private final static String defaultKey = "12345678";// 8的倍数秘钥
 
     public static void main(String[] args) throws Exception {
         String data = "alert('地图使用已过期，请联系管理人员！');";
         System.out.println(encrypt(data));
-        //8lwvtfR8zl8=
+        // 8lwvtfR8zl8=
         System.out.println(decrypt(encrypt(data)));
     }
 
@@ -38,8 +38,7 @@ public class DesUtils {
      */
     public static String encrypt(String data) throws Exception {
         byte[] bt = encrypt(data.getBytes(ENCODE), defaultKey.getBytes(ENCODE));
-        String strs = new BASE64Encoder().encode(bt);
-        return strs;
+        return Base64.getEncoder().encodeToString(bt);
     }
 
     /**
@@ -52,8 +51,7 @@ public class DesUtils {
     public static String decrypt(String data) throws IOException, Exception {
         if (data == null)
             return null;
-        BASE64Decoder decoder = new BASE64Decoder();
-        byte[] buf = decoder.decodeBuffer(data);
+        byte[] buf = Base64.getDecoder().decode(data);
         byte[] bt = decrypt(buf, defaultKey.getBytes(ENCODE));
         return new String(bt, ENCODE);
     }
@@ -63,14 +61,13 @@ public class DesUtils {
      *
      * @param data
      * @param key
-     *            加密键byte数组
+     *             加密键byte数组
      * @return
      * @throws Exception
      */
     public static String encrypt(String data, String key) throws Exception {
         byte[] bt = encrypt(data.getBytes(ENCODE), defaultKey.getBytes(ENCODE));
-        String strs = new BASE64Encoder().encode(bt);
-        return strs;
+        return Base64.getEncoder().encodeToString(bt);
     }
 
     /**
@@ -78,7 +75,7 @@ public class DesUtils {
      *
      * @param data
      * @param key
-     *            加密键byte数组
+     *             加密键byte数组
      * @return
      * @throws IOException
      * @throws Exception
@@ -87,8 +84,7 @@ public class DesUtils {
             Exception {
         if (data == null)
             return null;
-        BASE64Decoder decoder = new BASE64Decoder();
-        byte[] buf = decoder.decodeBuffer(data);
+        byte[] buf = Base64.getDecoder().decode(data);
         byte[] bt = decrypt(buf, key.getBytes(ENCODE));
         return new String(bt, ENCODE);
     }
@@ -98,7 +94,7 @@ public class DesUtils {
      *
      * @param data
      * @param key
-     *            加密键byte数组
+     *             加密键byte数组
      * @return
      * @throws Exception
      */
@@ -127,7 +123,7 @@ public class DesUtils {
      *
      * @param data
      * @param key
-     *            加密键byte数组
+     *             加密键byte数组
      * @return
      * @throws Exception
      */
