@@ -12,7 +12,7 @@
     <insert id="applyTask" parameterType="java.util.HashMap">
         <!-- 能获取主键 -->
         <selectKey keyProperty="taskid" order="BEFORE" resultType="java.lang.Integer">
-            SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_NAME='gather_task';
+            SELECT max(AUTO_INCREMENT) as AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_NAME='gather_task';
         </selectKey>
 
         INSERT INTO gather_task(id,name,description,table_name,type,cjsj,layerimg,flag,userid,color)
