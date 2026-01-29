@@ -11,7 +11,7 @@
         <if test="gather_type=='polyline' or gather_type=='polygon'">
             INSERT INTO ${table_name}(GATHER_ZXZT,GATHER_ZBC,GATHER_CJR,GATHER_CJSJ,GATHER_CJJQ,
         </if>
-        <if test="gather_type=='absence'">
+        <if test="gather_type=='none'">
             INSERT INTO ${table_name}(GATHER_ZXZT,GATHER_CJR,GATHER_CJSJ,GATHER_CJJQ,
         </if>
         <if test="keys!=null  and keys.size>0 ">
@@ -30,7 +30,7 @@
             VALUES ('0',#{gather_zbc,jdbcType=VARCHAR},#{gather_cjr,jdbcType=VARCHAR},NOW(),#{gather_cjjq,jdbcType=VARCHAR},
         </if>
 
-        <if test="gather_type=='absence'">
+        <if test="gather_type=='none'">
             VALUES ('0',#{gather_cjr,jdbcType=VARCHAR},NOW(),#{gather_cjjq,jdbcType=VARCHAR},
         </if>
 
@@ -81,8 +81,12 @@
         <if test="pageSize!=null and pageSize!=''">
             limit ${start},${pageSize}
         </if>
+    </select>
 
-
+    
+    <select id="count" parameterType="java.util.HashMap" resultType="java.util.HashMap" useCache="false">
+        SELECT count(1) AS SUM_COUNT FROM ${layer_name} t WHERE 1=1
+        AND GATHER_ZXZT='0'
     </select>
 
 
@@ -93,7 +97,7 @@
         <if test="gather_type=='polyline' or gather_type=='polygon'">
             UPDATE ${table_name} SET GATHER_ZBC=#{gather_zbc,jdbcType=VARCHAR},
         </if>
-        <if test="gather_type=='absence'">
+        <if test="gather_type=='none'">
             UPDATE ${table_name} SET
         </if>
         GATHER_GXRY=#{gather_cjr,jdbcType=VARCHAR},GATHER_GXSJ=NOW(),
