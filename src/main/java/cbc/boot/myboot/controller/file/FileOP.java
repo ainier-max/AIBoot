@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +20,9 @@ public class FileOP {
     private SqlSessionFactory sqlSessionFactory;
 
     @PostMapping("/cbc/upload.cbc")
-    public List<Object> uploadFile(@RequestParam("param") String param, @RequestParam("file") List<MultipartFile> files, HttpServletRequest request) {
+    public ResponseEntity<List<Object>> uploadFile(@RequestParam("param") String param,
+            @RequestParam("file") List<MultipartFile> files,
+            HttpServletRequest request) {
         System.out.println("----------Start(Author:陈斌才)----------");
         System.out.println("执行upload操作!");
         System.out.println("请求参数!" + param);
@@ -41,55 +45,62 @@ public class FileOP {
             sqlSession.commit();
             hashMap.put("state", "success");
             hashMap.put("uuid", uuid);
+            returnList.add(hashMap);
+            System.out.println("----------End(Author:陈斌才)----------");
+            return ResponseEntity.ok(returnList);
         } catch (Exception e) {
             e.printStackTrace();
             hashMap.put("state", "error");
             hashMap.put("message", e.getMessage());
-        } finally {
             returnList.add(hashMap);
             System.out.println("----------End(Author:陈斌才)----------");
-            return returnList;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(returnList);
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
         }
     }
 
     @GetMapping("/cbc/getFile.cbc")
-    public void getFile(@RequestParam("uuid") String uuid,@RequestParam("type") String type,  HttpServletRequest request, HttpServletResponse response) {
-        //http://10.11.0.87:8087/cbc/findFile.cbc?uuid=8817497b-26dc-4596-810f-ee7a396827ae&type=video
+    public void getFile(@RequestParam("uuid") String uuid, @RequestParam("type") String type,
+            HttpServletRequest request, HttpServletResponse response) {
+        // http://10.11.0.87:8087/cbc/findFile.cbc?uuid=8817497b-26dc-4596-810f-ee7a396827ae&type=video
         System.out.println("----------Start(Author:陈斌才)----------");
         System.out.println("执行findFile操作!");
         System.out.println("请求文件的UUID值：" + uuid);
         System.out.println("请求文件类型值：" + type);
-        SqlSession sqlSession=null;
+        SqlSession sqlSession = null;
         OutputStream outputStream = null;
 
         try {
-            Map map =new HashMap();
-            map.put("uuid",uuid);
-            sqlSession=sqlSessionFactory.openSession();
-            List<Map<String, Object>> list=sqlSession.selectList("gather_file.find", map);
+            Map map = new HashMap();
+            map.put("uuid", uuid);
+            sqlSession = sqlSessionFactory.openSession();
+            List<Map<String, Object>> list = sqlSession.selectList("gather_file.find", map);
             System.out.println(list);
-            if(list.size()>0){
-                if(type.equals("photo")){
-                    byte[] data =(byte[])list.get(0).get("content");
+            if (list.size() > 0) {
+                if (type.equals("photo")) {
+                    byte[] data = (byte[]) list.get(0).get("content");
                     outputStream = response.getOutputStream();
                     outputStream.write(data);
                     outputStream.flush();
-                }else if(type.equals("video")){
-                    //google浏览器目前只支持mp4格式的视频播放
+                } else if (type.equals("video")) {
+                    // google浏览器目前只支持mp4格式的视频播放
                     response.setHeader("Content-Type", "video/mp4");
-                    byte[] data =(byte[])list.get(0).get("content");
+                    byte[] data = (byte[]) list.get(0).get("content");
                     outputStream = response.getOutputStream();
                     outputStream.write(data);
                     outputStream.flush();
-                }else if(type.equals("audio")){
+                } else if (type.equals("audio")) {
                     response.setHeader("Content-Type", "audio/mpeg");
-                    byte[] data =(byte[])list.get(0).get("content");
+                    byte[] data = (byte[]) list.get(0).get("content");
                     outputStream = response.getOutputStream();
                     outputStream.write(data);
                     outputStream.flush();
-                }else if(type.equals("umd")){
+                } else if (type.equals("umd")) {
                     response.setHeader("Content-Type", "application/json");
-                    byte[] data =(byte[])list.get(0).get("content");
+                    byte[] data = (byte[]) list.get(0).get("content");
                     outputStream = response.getOutputStream();
                     outputStream.write(data);
                     outputStream.flush();
@@ -108,7 +119,7 @@ public class FileOP {
 
     @PostMapping("/cbc/deleteFile.cbc")
     public List<Object> deleteFile(@RequestBody String param, HttpServletRequest request,
-                                   HttpServletResponse response) {
+            HttpServletResponse response) {
         System.out.println("----------Start(Author:陈斌才)----------");
         System.out.println("执行deleteFile操作!");
         System.out.println("传入参数：" + param);
@@ -117,7 +128,7 @@ public class FileOP {
         SqlSession sqlSession = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            Map map=mapper.readValue(param, Map.class);
+            Map map = mapper.readValue(param, Map.class);
             sqlSession = sqlSessionFactory.openSession();
             int insert_flag = sqlSession.insert("gather_file.delete", map);
             sqlSession.commit();

@@ -107,4 +107,10 @@
         WHERE GATHER_ID=#{gather_id,jdbcType=VARCHAR}
     </update>
 
+        
+
+    <delete id="delete" parameterType="java.util.HashMap" >
+        DELETE FROM ${table_name} WHERE GATHER_ID=#{gather_id,jdbcType=VARCHAR}
+    </delete>
+
 </mapper>
