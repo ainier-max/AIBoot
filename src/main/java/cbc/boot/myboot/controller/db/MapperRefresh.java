@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +46,8 @@ public class MapperRefresh {
     private ApplicationContext applicationContext;
 
     @PostMapping("/cbc/mapperRefreshByDeleteNameSpace.cbc")
-    public List<Object> mapperRefreshByDeleteNameSpace(@RequestBody String param, HttpServletRequest request,
+    public ResponseEntity<List<Object>> mapperRefreshByDeleteNameSpace(@RequestBody String param,
+            HttpServletRequest request,
             HttpServletResponse response) {
         System.out.println("----------Start(Author:陈斌才)----------");
         HashMap<String, Object> hashMap = new HashMap<String, Object>();
@@ -108,24 +111,28 @@ public class MapperRefresh {
             }
 
             hashMap.put("state", "success");
+            returnList.add(hashMap);
+            System.out.println("----------End(Author:陈斌才)----------");
+            return ResponseEntity.ok(returnList);
 
         } catch (Exception e) {
             e.printStackTrace();
             hashMap.put("state", "error");
             hashMap.put("message", e.getMessage());
+            returnList.add(hashMap);
+            System.out.println("----------End(Author:陈斌才)----------");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(returnList);
         } finally {
             if (sqlSession != null) {
                 sqlSession.close();
                 sqlSession = null;
             }
-            returnList.add(hashMap);
-            System.out.println("----------End(Author:陈斌才)----------");
-            return returnList;
         }
     }
 
     @PostMapping("/cbc/mapperRefreshByEditNameSpace.cbc")
-    public List<Object> mapperRefreshByEditNameSpace(@RequestBody String param, HttpServletRequest request,
+    public ResponseEntity<List<Object>> mapperRefreshByEditNameSpace(@RequestBody String param,
+            HttpServletRequest request,
             HttpServletResponse response) {
         System.out.println("----------Start(Author:陈斌才)----------");
         HashMap<String, Object> hashMap = new HashMap<String, Object>();
@@ -191,25 +198,27 @@ public class MapperRefresh {
                 hashMap.put("state", "success");
 
             }
+            returnList.add(hashMap);
+            System.out.println("----------End(Author:陈斌才)----------");
+            return ResponseEntity.ok(returnList);
 
         } catch (Exception e) {
             e.printStackTrace();
             hashMap.put("state", "error");
             hashMap.put("message", e.getMessage());
+            returnList.add(hashMap);
+            System.out.println("----------End(Author:陈斌才)----------");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(returnList);
         } finally {
             if (sqlSession != null) {
                 sqlSession.close();
                 sqlSession = null;
             }
-            returnList.add(hashMap);
-            System.out.println("----------End(Author:陈斌才)----------");
-            return returnList;
         }
-
     }
 
     @PostMapping("/cbc/mapperRefresh.cbc")
-    public List<Object> mapperRefresh(@RequestBody String param, HttpServletRequest request,
+    public ResponseEntity<List<Object>> mapperRefresh(@RequestBody String param, HttpServletRequest request,
             HttpServletResponse response) {
 
         System.out.println("----------Start(Author:陈斌才)----------");
@@ -265,19 +274,22 @@ public class MapperRefresh {
             xmlMapperBuilder.parse();
 
             hashMap.put("state", "success");
+            returnList.add(hashMap);
+            System.out.println("----------End(Author:陈斌才)----------");
+            return ResponseEntity.ok(returnList);
 
         } catch (Exception e) {
             e.printStackTrace();
             hashMap.put("state", "error");
             hashMap.put("message", e.getMessage());
+            returnList.add(hashMap);
+            System.out.println("----------End(Author:陈斌才)----------");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(returnList);
         } finally {
             if (sqlSession != null) {
                 sqlSession.close();
                 sqlSession = null;
             }
-            returnList.add(hashMap);
-            System.out.println("----------End(Author:陈斌才)----------");
-            return returnList;
         }
 
     }
