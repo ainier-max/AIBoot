@@ -49,7 +49,7 @@ public class GlmController {
         messages.add(chatMessage);
 
         ChatCompletionRequest request = ChatCompletionRequest.builder()
-                .model("glm-4") // 若智谱上线了 glm-5 的正式版别名，可以在此处替换成如 "glm-5"
+                .model("glm-5") // 若智谱上线了 glm-5 的正式版别名，可以在此处替换成如 "glm-5"
                 .stream(false)
                 .invokeMethod(Constants.invokeMethod)
                 .messages(messages)
