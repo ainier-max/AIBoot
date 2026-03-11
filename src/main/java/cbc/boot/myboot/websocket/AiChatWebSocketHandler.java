@@ -34,6 +34,7 @@ public class AiChatWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        System.out.println("handleTextMessage--大模型开发交流消息");
         String userContent = message.getPayload();
 
         // 构建消息列表
