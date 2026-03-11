@@ -50,6 +50,7 @@ public class MapperRefresh {
             HttpServletRequest request,
             HttpServletResponse response) {
         System.out.println("----------Start(Author:陈斌才)----------");
+        System.out.println("----------方法mapperRefreshByDeleteNameSpace----------");
         HashMap<String, Object> hashMap = new HashMap<String, Object>();
         List<Object> returnList = new ArrayList<Object>();
         configuration = sqlSessionFactory.getConfiguration();
@@ -71,14 +72,23 @@ public class MapperRefresh {
             }
 
             String namespace = (String) map.get("name_space");
-            System.out.println("命名空间12：" + namespace);
+            System.out.println("命名空间：" + namespace);
 
             // String classpath = System.getProperty("java.class.path");
             // System.out.println("classpath: " + classpath);
 
-            URL resource = ClassLoader.getSystemResource("");
+            // 使用更可靠的方式获取类路径
+            String classpath = null;
+            URL resource = this.getClass().getClassLoader().getResource("");
+            if (resource == null) {
+                resource = this.getClass().getResource("/");
+            }
+            if (resource == null) {
+                resource = ClassLoader.getSystemResource("");
+            }
+            
             if (resource != null) {
-                String classpath = resource.getPath();
+                classpath = resource.getPath();
                 File file = new File(classpath + "\\mapper\\lowcode\\" + namespace + ".xml");
                 // 存在则删除
                 if (file.exists()) {
@@ -135,6 +145,8 @@ public class MapperRefresh {
             HttpServletRequest request,
             HttpServletResponse response) {
         System.out.println("----------Start(Author:陈斌才)----------");
+        System.out.println("----------方法mapperRefreshByEditNameSpace----------");
+
         HashMap<String, Object> hashMap = new HashMap<String, Object>();
         List<Object> returnList = new ArrayList<Object>();
         configuration = sqlSessionFactory.getConfiguration();
@@ -156,14 +168,23 @@ public class MapperRefresh {
                 hashMap.put("state", "success");
             } else {
                 System.out.println("命名空間发生变化");
-                System.out.println("命名空间12：" + namespace);
+                System.out.println("命名空间：" + namespace);
 
                 // String classpath = System.getProperty("java.class.path");
                 // System.out.println("classpath: " + classpath);
 
-                URL resource = ClassLoader.getSystemResource("");
+                // 使用更可靠的方式获取类路径
+                String classpath = null;
+                URL resource = this.getClass().getClassLoader().getResource("");
+                if (resource == null) {
+                    resource = this.getClass().getResource("/");
+                }
+                if (resource == null) {
+                    resource = ClassLoader.getSystemResource("");
+                }
+                
                 if (resource != null) {
-                    String classpath = resource.getPath();
+                    classpath = resource.getPath();
                     File file = new File(classpath + "\\mapper\\lowcode\\" + oldnamespace + ".xml");
                     // 存在则删除
                     if (file.exists()) {
@@ -222,6 +243,8 @@ public class MapperRefresh {
             HttpServletResponse response) {
 
         System.out.println("----------Start(Author:陈斌才)----------");
+        System.out.println("----------方法mapperRefresh----------");
+
         HashMap<String, Object> hashMap = new HashMap<String, Object>();
         List<Object> returnList = new ArrayList<Object>();
         configuration = sqlSessionFactory.getConfiguration();
@@ -237,14 +260,27 @@ public class MapperRefresh {
             sqlSession.commit();
 
             String namespace = (String) map.get("name_space");
-            System.out.println("命名空间12：" + namespace);
+            System.out.println("命名空间：" + namespace);
 
             // String classpath = System.getProperty("java.class.path");
             // System.out.println("classpath: " + classpath);
 
-            URL resource = ClassLoader.getSystemResource("");
+            // 使用更可靠的方式获取类路径
+            String classpath = null;
+            URL resource = this.getClass().getClassLoader().getResource("");
+            if (resource == null) {
+                // 如果还是 null，尝试获取当前类的路径
+                resource = this.getClass().getResource("/");
+            }
+            if (resource == null) {
+                // 最后尝试系统类加载器
+                resource = ClassLoader.getSystemResource("");
+            }
+            
+            System.out.println("mapperRefresh--resource:" + resource);
+            
             if (resource != null) {
-                String classpath = resource.getPath();
+                classpath = resource.getPath();
                 File file = new File(classpath + "\\mapper\\lowcode\\" + namespace + ".xml");
                 // 存在则删除
                 if (file.exists()) {
