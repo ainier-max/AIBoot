@@ -6,12 +6,12 @@
     
     <!-- 根据图层名称查询表名 -->
     <select id="getTableNameByLayerName" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-        SELECT table_name FROM gather_layer_config WHERE name = #{layerName}
+        SELECT table_name as tableName FROM gather_task WHERE name = #{layerName}
     </select>
     
     <!-- 查询指定表的总条数 -->
-    <select id="getTableCount" parameterType="java.util.HashMap" resultType="java.lang.Integer">
-        SELECT COUNT(*) FROM ${tableName}
+    <select id="getTableCount" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT COUNT(*) as countNum FROM ${tableName}
     </select>
 
 </mapper>

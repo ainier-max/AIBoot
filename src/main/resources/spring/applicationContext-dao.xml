@@ -97,6 +97,7 @@
 		<property name="dataSource" ref="dynamicDataSource"></property>
 		<property name="mapperLocations">
 			<array>
+				<value>classpath:/mapper/ai/*.xml</value>
 				<value>classpath:/mapper/elastic/*.xml</value>
 				<value>classpath:/mapper/user/*.xml</value>
 				<value>classpath:/mapper/zzjg/*.xml</value>
