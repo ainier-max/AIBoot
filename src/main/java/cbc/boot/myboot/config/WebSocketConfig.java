@@ -1,11 +1,12 @@
 package cbc.boot.myboot.config;
 
-import cbc.boot.myboot.websocket.AiChatWebSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+
+import cbc.boot.myboot.websocket.AIChat.AiChatWebSocketHandler;
 
 @Configuration
 @EnableWebSocket

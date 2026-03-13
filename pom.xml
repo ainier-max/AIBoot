@@ -180,12 +180,7 @@
 			<version>0.1.1</version>
 		</dependency>
 
-		<!-- 智谱AI GLM大模型 -->
-		<dependency>
-			<groupId>cn.bigmodel.openapi</groupId>
-			<artifactId>oapi-java-sdk</artifactId>
-			<version>release-V4-2.4.3</version>
-		</dependency>
+		
 
 		<!-- websocket 依赖 -->
 		<dependency>
