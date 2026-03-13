@@ -58,6 +58,32 @@ public class CombineSqlUtil {
     }
 
     /**
+     * 执行单个 SQL
+     * @param param 包含 sql 字段和其他参数
+     * @return 单个 SQL 的执行结果
+     */
+    public Object executeOneSql(Map<String, Object> param) {
+        System.out.println("executeOneSql--执行单个 SQL");
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = sqlSessionFactory.openSession();
+            
+            String sqlId = (String) param.get("sql");
+            if (sqlId == null || sqlId.isEmpty()) {
+                return null;
+            }
+            
+            List<Map<String, Object>> list = sqlSession.selectList(sqlId, param);
+            return list;
+            
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
+
+    /**
      * 调用示例（需在 Spring 容器中运行）
      * 
      * 示例场景：通过图层名称"网吧"查询对应表名，再统计该表总条数
