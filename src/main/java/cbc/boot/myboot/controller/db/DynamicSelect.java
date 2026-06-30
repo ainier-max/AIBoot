@@ -28,19 +28,18 @@ public class DynamicSelect {
     private SqlSessionFactory sqlSessionFactory;
 
     @PostMapping("/api/select/{namespace}/{sqlId}")
-    public ResponseEntity<List<Object>> selectByNamespace(@PathVariable("namespace") String namespace,
+    public ResponseEntity<Map<String, Object>> selectByNamespace(@PathVariable("namespace") String namespace,
             @PathVariable("sqlId") String sqlId, @RequestBody String param, HttpServletRequest request,
             HttpServletResponse response) {
         System.out.println("执行查询操作,查询信息" + namespace+"."+sqlId);
         return select(param, namespace + "." + sqlId, request, response);
     }
 
-    private ResponseEntity<List<Object>> select(String param, String dynamicSql, HttpServletRequest request,
+    private ResponseEntity<Map<String, Object>> select(String param, String dynamicSql, HttpServletRequest request,
             HttpServletResponse response) {
         System.out.println("传入参数:");
         System.out.println(param);
-        List<Object> returnList = new ArrayList<Object>();
-        HashMap<String, Object> hashMap = new HashMap<String, Object>();
+        HashMap<String, Object> resultMap = new HashMap<String, Object>();
         SqlSession sqlSession = null;
         Date date1 = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// 可以方便地修改日期格式
@@ -59,23 +58,24 @@ public class DynamicSelect {
             }
             sqlSession = sqlSessionFactory.openSession();
             List<Map<String, Object>> list = sqlSession.selectList((String) map.get("sql"), map);
-            // System.out.println("查询到的记录数："+list.size());
-            hashMap.put("state", "success");
             Date date2 = new Date();
             String durationTime = (date2.getTime() - date1.getTime()) + "MS";
-            hashMap.put("time", durationTime);
             System.out.println("执行时间：" + durationTime);
-            hashMap.put("objects", list);
-            returnList.add(hashMap);
+            resultMap.put("code", 200);
+            resultMap.put("success", true);
+            resultMap.put("message", "操作成功！");
+            resultMap.put("data", list);
+            resultMap.put("time", durationTime);
             System.out.println("----------End(Author:陈斌才)----------");
-            return ResponseEntity.ok(returnList);
+            return ResponseEntity.ok(resultMap);
         } catch (Exception e) {
             e.printStackTrace();
-            hashMap.put("state", "error");
-            hashMap.put("message", e.getMessage());
-            returnList.add(hashMap);
+            resultMap.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            resultMap.put("success", false);
+            resultMap.put("message", e.getMessage());
+            resultMap.put("data", null);
             System.out.println("----------End(Author:陈斌才)----------");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(returnList);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultMap);
         } finally {
             if (sqlSession != null) {
                 sqlSession.close();
